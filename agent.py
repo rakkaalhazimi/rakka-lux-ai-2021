@@ -38,13 +38,13 @@ def agent(observation, configuration):
             if cell.has_resource():
                 resource_tiles.append(cell)
 
-    # we iterate over all our units and do something with them
+    # We iterate over all our units and do something with them
     for unit in player.units:
         if unit.is_worker() and unit.can_act():
             closest_dist = math.inf
             closest_resource_tile = None
             if unit.get_cargo_space_left() > 0:
-                # if the unit is a worker and we have space in cargo, lets find the nearest resource tile and try to mine it
+                # If the unit is a worker and we have space in cargo, lets find the nearest resource tile and try to mine it
                 for resource_tile in resource_tiles:
                     if resource_tile.resource.type == Constants.RESOURCE_TYPES.COAL and not player.researched_coal(): continue
                     if resource_tile.resource.type == Constants.RESOURCE_TYPES.URANIUM and not player.researched_uranium(): continue
@@ -56,7 +56,7 @@ def agent(observation, configuration):
                     log.debug("Go to the resource")
                     actions.append(unit.move(unit.pos.direction_to(closest_resource_tile.pos)))
             else:
-                # if unit is a worker and there is no cargo space left, and we have cities, lets return to them
+                # If unit is a worker and there is no cargo space left, and we have cities, lets return to them
                 if len(player.cities) > 0:
                     closest_dist = math.inf
                     closest_city_tile = None
@@ -71,6 +71,12 @@ def agent(observation, configuration):
                         log.debug("Back to the city")
                         actions.append(unit.move(move_dir))
 
+    # Do a research in city tiles
+    for city in player.cities.values():
+        for city_tile in city.citytiles:
+            if city_tile.cooldown < 1:
+                log.debug("Commit a research")
+                actions.append(city_tile.research())
     
 
     # you can add debug annotations using the functions in the annotate object
