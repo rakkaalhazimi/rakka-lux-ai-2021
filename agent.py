@@ -1,4 +1,7 @@
-import math, sys
+import math
+import sys
+
+from logger import log
 from lux.game import Game
 from lux.game_map import Cell, RESOURCE_TYPES
 from lux.constants import Constants
@@ -50,6 +53,7 @@ def agent(observation, configuration):
                         closest_dist = dist
                         closest_resource_tile = resource_tile
                 if closest_resource_tile is not None:
+                    log.debug("Go to the resource")
                     actions.append(unit.move(unit.pos.direction_to(closest_resource_tile.pos)))
             else:
                 # if unit is a worker and there is no cargo space left, and we have cities, lets return to them
@@ -64,7 +68,10 @@ def agent(observation, configuration):
                                 closest_city_tile = city_tile
                     if closest_city_tile is not None:
                         move_dir = unit.pos.direction_to(closest_city_tile.pos)
+                        log.debug("Back to the city")
                         actions.append(unit.move(move_dir))
+
+    
 
     # you can add debug annotations using the functions in the annotate object
     # actions.append(annotate.circle(0, 0))
